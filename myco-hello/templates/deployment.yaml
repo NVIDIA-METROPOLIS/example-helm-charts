@@ -1,0 +1,138 @@
+# Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+{{- $chart := .Chart -}}
+{{- $values := .Values -}}
+{{- range $node := $values.nvidia.metropolis.nodes }}
+{{- range $pod := $values.pods }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app: {{ $chart.Name }}
+    app.version: {{ $chart.AppVersion }}
+  labels:
+    name: {{ $pod.name }}
+  name: {{ $pod.name }}
+  namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+spec:
+  replicas: {{ $pod.replicas }}
+  selector:
+    matchLabels:
+      name: {{ $pod.name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: {{ $pod.name }}
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: {{ $node.name | quote }}
+      initContainers:
+{{- range $container := $pod.initContainers }}
+      - name: {{ $container.name | quote }}
+        image: {{ $container.image | quote }}
+        command:
+{{- with $container.command }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        args:
+{{- with $container.args }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        env:
+{{- with $container.env }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        ports:
+{{- with $container.ports }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        volumeMounts:
+{{- with $container.volumeMounts }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- end }}
+      containers: 
+{{- range $container := $pod.containers }}
+      - name: {{ $container.name | quote }}
+        image: {{ $container.image | quote }}
+        command:
+{{- with $container.command }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        args:
+{{- with $container.args }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        env:
+{{- if $container.metropolis.useNvidiaDevicePlugin }}
+{{- else }}
+        - name: CUDA_DEVICE_ORDER
+          value: PCI_BUS_ID
+        - name: CUDA_VISIBLE_DEVICES
+          value: "{{ range $index, $gpu := $node.gpus }}{{if ne $index 0}},{{end}}{{ $gpu.id }}{{ end }}"
+{{- end }}
+{{- with $container.env }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        ports:
+{{- range $port := $container.ports }}
+        - containerPort: {{ $port.containerPort }}
+{{- end }}
+        volumeMounts:
+{{- with $container.volumeMounts }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        resources:
+{{- if $container.resources }}
+          requests:
+{{- with $container.resources.requests }}
+{{ toYaml . | indent 10 }}
+{{- end }}
+{{- end }}
+          limits:
+{{- if $container.resources }}
+{{- with $container.resources.limits }}
+{{ toYaml . | indent 10 }}
+{{- end }}
+{{- end }}
+{{- if $container.metropolis.useNvidiaDevicePlugin }}
+{{- if eq $container.metropolis.numGpu "auto" }}
+            nvidia.com/gpu: {{ len $node.gpus }}
+{{- else }}
+            nvidia.com/gpu: {{ $container.metropolis.numGpu }}
+{{- end }}
+{{- end }}
+{{- end }}
+      imagePullSecrets:
+      - name: nvidia-registrykey-secret
+      restartPolicy: Always
+      volumes:
+{{- range $volume := $pod.volumes }}
+      - name: {{ $volume.name }}
+        persistentVolumeClaim:
+          claimName: {{ $volume.persistentVolumeClaim.claimName }}
+{{- end }}
+---
+{{- end }}
+{{- end }}
+
