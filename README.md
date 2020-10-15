@@ -61,7 +61,7 @@ More details on Helm charts can be found at: https://helm.sh/
 
 Helm chart is the mechanism of deployment on an NVIDIA<small><sup>&reg;</sup></small> environment.
 
-The samples provided in this project support both versions: Helm2 and Helm3.
+The samples provided in this project support both versions: Helm 2 and Helm 3.
 
 To be NVIDIA<small><sup>&reg;</sup></small> compatible, an Helm chart should implement a helm package that include specific parameters in its values.yaml file.
 
@@ -120,7 +120,7 @@ One can deploy each sample after overriding the nvidia.nodes hostnames and globa
 
 Overriding these parameters can be achieved by creating a new values file or explicitely set a parameter in the command line ,i.e. commandlevel.values.yaml, holding the modified 'nvidia' section.
 
-Here is an example deployment command line using Helm3:
+Here is an example deployment command line using Helm 3:
 
 ```bash
 helm install <deployment name> <helm package> -f commandlevel.values.yaml --set global.nvidia.docker.password=<NGC_API_KEY>
@@ -162,7 +162,7 @@ The purpose of this values.yaml file is to define all the parameters necessary t
 
 These default parameters can be overriden using arguments on the 'helm install' command line at time of deployment.
 
-For example:
+For example, using Helm 3:
 
 ```bash
 helm install <deployment name> <helm package> -f commandlevel.values.yaml --set global.nvidia.docker.password=<NGC_API_KEY>
@@ -282,7 +282,7 @@ The mandatory 'nvidia' parameter describes the nodes, GPUs, video stream URLs an
 
 The mandatory 'global.nvidia.docker' parameter describes the necessary credentials to download the containers. In non-EGX deployment, the password parameter is required, but should not be saved inside the Helm chart's values.yaml file. Doing so would be a security risk.
 
-For example:
+For example, using Helm 3:
 
 ```bash
 helm install <deployment name> <helm package> -f commandlevel.values.yaml --set global.nvidia.docker.password=<NGC_API_KEY>
@@ -696,12 +696,12 @@ TBD
           password: ""
     ```
 
-	To validate an application, one should be able to deploy the application using the command (example with Helm3):
+	To validate an application, one should be able to deploy the application using the command (example with Helm 3):
 
 	```bash
 	helm install <deployment name> <helm package> -f nvidiacompatible-values.yaml
 	```
-2. If the application includes default configuration parameters in the values.yaml and expects an operator to be able to modify such configuration according to unique deployment parameters, the application should demonstrate a capability to accept/override such default values from the command line (example with Helm3):
+2. If the application includes default configuration parameters in the values.yaml and expects an operator to be able to modify such configuration according to unique deployment parameters, the application should demonstrate a capability to accept/override such default values from the command line (example with Helm 3):
 
 	```bash
 	helm install <deployment name> <helm package> -f nvidiacompatible-values.yaml -f appconfig-values.yaml
