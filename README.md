@@ -5,7 +5,7 @@ This project documents the NVIDIA<small><sup>&reg;</sup></small> Helm chart temp
 
 For a quick reference to version 1 standard, please refer to: [standard-values-v1.yaml](standard-values-v1.yaml)
 
-The document below will guide you on how to use VIDIA<small><sup>&reg;</sup></small> Helm chart templates.
+The document below will guide you on how to use NVIDIA<small><sup>&reg;</sup></small> Helm chart templates.
 
 ## Table of Content
 
