@@ -604,6 +604,7 @@ data:
       {{- range $s1 := $gpu.streams }}
     "{{$s1.url}}", "{{$s1.resolution}}", {{$s1.framerate}}, "{{$s1.encoding}}"
       {{- end }}
+---
    {{- end }}
 {{- end }}
 ```
