@@ -116,7 +116,7 @@ Using the templates and following the standard structure will minimize the time 
 
 The samples included in this project come with templates that form a scaffolding that can be used by application developers to implement application deployment using Helm charts.
 
-One can deploy each sample after overriding the nvidia.nodes.hostnames and global.nvidia.docker.password from the helm package's values.yaml.
+One can deploy each sample after overriding the nvidia.nodes hostnames and global.nvidia.docker.password from the helm package's values.yaml.
 
 Overriding these parameters can be achieved by creating a new values file or explicitely set a parameter in the command line ,i.e. commandlevel.values.yaml, holding the modified 'nvidia' section.
 
