@@ -20,12 +20,22 @@
 
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
-{{- range $node := $values.nvidia.metropolis.nodes }}
+{{- range $node := $values.nvidia.nodes }}
 apiVersion: v1
-kind: Namespace
+kind: LimitRange
 metadata:
-  name: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
-  labels:
-    name: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+  name: limit-range
+  namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+spec:
+  limits:
+  - default:
+{{- with $node.resources.limits }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    defaultRequest:
+{{- with $node.resources.requests }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    type: Container
 ---
 {{- end }}

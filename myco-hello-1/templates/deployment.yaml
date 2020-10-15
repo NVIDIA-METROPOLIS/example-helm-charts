@@ -20,7 +20,7 @@
 
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
-{{- range $node := $values.nvidia.metropolis.nodes }}
+{{- range $node := $values.nvidia.nodes }}
 {{- range $pod := $values.pods }}
 apiVersion: apps/v1
 kind: Deployment
@@ -73,6 +73,60 @@ spec:
 {{- end }}
       containers: 
 {{- range $container := $pod.containers }}
+{{- if $container.nvidia.singleGpuPerContainer }}
+{{- range $index, $gpu := $node.gpus }}
+
+      - name: "{{ $container.name }}-{{ $index }}"
+        image: {{ $container.image | quote }}
+        command:
+{{- with $container.command }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        args:
+{{- with $container.args }}
+{{ toYaml . | indent 8 | replace "${gpu_index}" ($index | toString) }}
+{{- end }}
+        env:
+{{- if $container.nvidia.nvidiaDevicePlugin }}
+{{- else }}
+        - name: CUDA_DEVICE_ORDER
+          value: PCI_BUS_ID
+        - name: CUDA_VISIBLE_DEVICES
+          value: "{{ $gpu.id }}"
+{{- end }}
+{{- with $container.env }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+        ports:
+{{- range $port := $container.ports }}
+        - containerPort: {{ $port.containerPort }}
+{{- end }}
+        volumeMounts:
+{{- with $container.volumeMounts }}
+{{ toYaml . | replace "${gpu_index}" ($index | toString)| indent 8 }}
+{{- end }}
+        securityContext:
+          privileged: true
+        resources:
+{{- if $container.resources }}
+          requests:
+{{- with $container.resources.requests }}
+{{ toYaml . | indent 10 }}
+{{- end }}
+{{- end }}
+          limits:
+{{- if $container.resources }}
+{{- with $container.resources.limits }}
+{{ toYaml . | indent 10 }}
+{{- end }}
+{{- end }}
+{{- if $container.nvidia.nvidiaDevicePlugin }}
+            nvidia.com/gpu: 1
+{{- end }}
+{{- end }}
+
+
+{{- else }}
       - name: {{ $container.name | quote }}
         image: {{ $container.image | quote }}
         command:
@@ -84,7 +138,7 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
         env:
-{{- if $container.metropolis.useNvidiaDevicePlugin }}
+{{- if $container.nvidia.nvidiaDevicePlugin }}
 {{- else }}
         - name: CUDA_DEVICE_ORDER
           value: PCI_BUS_ID
@@ -102,6 +156,8 @@ spec:
 {{- with $container.volumeMounts }}
 {{ toYaml . | indent 8 }}
 {{- end }}
+        securityContext:
+          privileged: true
         resources:
 {{- if $container.resources }}
           requests:
@@ -115,22 +171,43 @@ spec:
 {{ toYaml . | indent 10 }}
 {{- end }}
 {{- end }}
-{{- if $container.metropolis.useNvidiaDevicePlugin }}
-{{- if eq $container.metropolis.numGpu "auto" }}
+{{- if $container.nvidia.nvidiaDevicePlugin }}
+{{- if $container.nvidia.nvidiaDevicePlugin.autoGpu }}
             nvidia.com/gpu: {{ len $node.gpus }}
 {{- else }}
-            nvidia.com/gpu: {{ $container.metropolis.numGpu }}
+            nvidia.com/gpu: {{ $container.nvidia.nvidiaDevicePlugin.numGpu }}
 {{- end }}
 {{- end }}
 {{- end }}
+{{- end }}
+
+
       imagePullSecrets:
-      - name: nvidia-registrykey-secret
+      - name: {{ $values.global.nvidia.docker.imagePullSecret }}
       restartPolicy: Always
       volumes:
 {{- range $volume := $pod.volumes }}
+{{- if $volume.persistentVolumeClaim }}
       - name: {{ $volume.name }}
         persistentVolumeClaim:
           claimName: {{ $volume.persistentVolumeClaim.claimName }}
+{{- else }}
+
+{{- if regexMatch "\\${.*}" ($volume | toString) }}
+{{- range $index, $gpu := $node.gpus }}
+{{- with $volume }}
+      -
+{{ toYaml . replace "${gpu_index}" ($index | toString) |  indent 8 }}
+{{- end }}
+{{- end }}
+{{- else }}
+{{- with $volume }}
+      -
+{{ toYaml . |  indent 8 }}
+{{- end }}
+{{- end }}
+
+{{- end }}
 {{- end }}
 ---
 {{- end }}

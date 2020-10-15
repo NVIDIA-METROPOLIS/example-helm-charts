@@ -20,26 +20,23 @@
 
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
-{{- range $node := $values.nvidia.metropolis.nodes }}
+{{- range $node := $values.nvidia.nodes }}
 {{- range $pod := $values.pods }}
-{{- if $pod.service }}
-apiVersion: v1
-kind: Service
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
 metadata:
-  annotations:
-    app: {{ $chart.Name }}
-    app.version: {{ $chart.AppVersion }}
-  labels:
-    name: {{ $pod.name }}
-  name: {{ $pod.name }}
+  name: ingress
   namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-{{- with $pod.service }}
-{{ toYaml . | indent 2 }}
-{{- end }}
-  selector:
-    name: {{ $pod.name }}
+  rules:
+  - http:
+      paths:
+      - path: /{{ $pod.name }}
+        backend:
+          serviceName: {{ $pod.name }}
+          servicePort: 80
 ---
-{{- end }}
 {{- end }}
 {{- end }}

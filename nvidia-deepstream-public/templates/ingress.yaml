@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -20,19 +18,25 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-cat << EOF
-
-To get your API key:
-  1) Log in to your enterprise account on the NGC website https://ngc.nvidia.com.
-  2) Click Setup from the side menu, then click API Key from the Setup page.
-  3) On the API Key page, click Generate API Key.
-  4) In response to the warning that your old API Key will become invalid, click CONTINUE to generate the key. Your API key is displayed with examples of how to use it.
-  5) Click Continue to generate the key. Your API key appears.
-
-EOF
-echo -n Enter NGC API Key:
-read -s password
-echo
-
-helm install myco-hello --set global.nvidia.docker.password=$password --generate-name
-
+{{- $chart := .Chart -}}
+{{- $values := .Values -}}
+{{- range $node := $values.nvidia.nodes }}
+{{- range $pod := $values.pods }}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /{{ $pod.name }}
+        backend:
+          serviceName: {{ $pod.name }}
+          servicePort: 80
+---
+{{- end }}
+{{- end }}

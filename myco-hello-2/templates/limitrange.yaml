@@ -20,23 +20,22 @@
 
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
-{{- range $node := $values.nvidia.metropolis.nodes }}
-{{- range $pod := $values.pods }}
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
+{{- range $node := $values.nvidia.nodes }}
+apiVersion: v1
+kind: LimitRange
 metadata:
-  name: ingress
+  name: limit-range
   namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  rules:
-  - http:
-      paths:
-      - path: /{{ $pod.name }}
-        backend:
-          serviceName: {{ $pod.name }}
-          servicePort: 80
----
+  limits:
+  - default:
+{{- with $node.resources.limits }}
+{{ toYaml . | indent 8 }}
 {{- end }}
+    defaultRequest:
+{{- with $node.resources.requests }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    type: Container
+---
 {{- end }}

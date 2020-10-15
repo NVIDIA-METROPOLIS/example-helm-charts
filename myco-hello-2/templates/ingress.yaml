@@ -20,14 +20,23 @@
 
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
-{{- range $node := $values.nvidia.metropolis.nodes }}
-apiVersion: v1
-kind: Secret
+{{- range $node := $values.nvidia.nodes }}
+{{- range $pod := $values.pods }}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
 metadata:
-  name: nvidia-registrykey-secret
+  name: ingress
   namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
-type: kubernetes.io/dockerconfigjson
-data:
-  .dockerconfigjson: {{ template "imagePullSecret" $values }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /{{ $pod.name }}
+        backend:
+          serviceName: {{ $pod.name }}
+          servicePort: 80
 ---
-{{- end -}}
+{{- end }}
+{{- end }}

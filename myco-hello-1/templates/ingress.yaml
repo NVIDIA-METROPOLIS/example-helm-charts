@@ -20,26 +20,23 @@
 
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
-{{- range $node := $values.nvidia.metropolis.nodes }}
+{{- range $node := $values.nvidia.nodes }}
 {{- range $pod := $values.pods }}
-{{- range $volume := $pod.volumes }}
-apiVersion: v1
-kind: PersistentVolumeClaim
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
 metadata:
-  name: {{ $volume.persistentVolumeClaim.claimName }}
+  name: ingress
   namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-{{- if eq $volume.persistentVolumeClaim.metropolis.storageType "fast" }}
-  storageClassName: {{ $values.global.nvidia.storageClassName.fast }}
-{{- else }}
-  storageClassName: {{ $values.global.nvidia.storageClassName.slow }}
-{{- end }}
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ $volume.persistentVolumeClaim.metropolis.storageSize | default "100Mi" | quote }}
+  rules:
+  - http:
+      paths:
+      - path: /{{ $pod.name }}
+        backend:
+          serviceName: {{ $pod.name }}
+          servicePort: 80
 ---
-{{- end }}
 {{- end }}
 {{- end }}

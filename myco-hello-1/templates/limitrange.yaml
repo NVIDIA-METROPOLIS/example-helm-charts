@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -20,4 +18,24 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-helm list | grep myco-hello | cut -f1 | xargs helm delete
+{{- $chart := .Chart -}}
+{{- $values := .Values -}}
+{{- range $node := $values.nvidia.nodes }}
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limit-range
+  namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+spec:
+  limits:
+  - default:
+{{- with $node.resources.limits }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    defaultRequest:
+{{- with $node.resources.requests }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    type: Container
+---
+{{- end }}
