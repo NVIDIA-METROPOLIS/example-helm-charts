@@ -118,12 +118,12 @@ The samples included in this project come with templates that form a scaffolding
 
 One can deploy each sample after overriding the nvidia.nodes.hostnames and global.nvidia.docker.password from the helm package's values.yaml.
 
-Overriding these parameters can be achieved by creating a new values file ,i.e. commandlevel.values.yaml, holding the modified 'nvidia' and 'global.nvidia' sections.
+Overriding these parameters can be achieved by creating a new values file or explicitely set a parameter in the command line ,i.e. commandlevel.values.yaml, holding the modified 'nvidia' section.
 
 Here is an example deployment command line using Helm3:
 
 ```bash
-helm install <deployment name> <helm package> -f commandlevel.values.yaml
+helm install <deployment name> <helm package> -f commandlevel.values.yaml --set global.nvidia.docker.password=<NGC_API_KEY>
 ```
 
 After deployment of one of the myco-hello samples, one can retrieve the cluster IP and target port for the service using:
@@ -165,8 +165,9 @@ These default parameters can be overriden using arguments on the 'helm install' 
 For example:
 
 ```bash
-helm install <deployment name> <helm package> -f commandlevel.values.yaml
+helm install <deployment name> <helm package> -f commandlevel.values.yaml --set global.nvidia.docker.password=<NGC_API_KEY>
 ```
+
 Command level values are useful to override NVIDIA<small><sup>&reg;</sup></small> standard configuration parameters affecting the current deployment.
 
 Examples of value.yaml files can be found bellow.
@@ -279,21 +280,38 @@ global:
 
 The mandatory 'nvidia' parameter describes the nodes, GPUs, video stream URLs and details, as well as compute resource requirements for the video stream workload. This parameter should describe a single video stream as a default deployment. An operator should override this parameter according to the deployment specific video workload using the command line.
 
-For example:
-
-```bash
-helm install <deployment name> <helm package> -f commandlevel.values.yaml
-```
-
 The mandatory 'global.nvidia.docker' parameter describes the necessary credentials to download the containers. In non-EGX deployment, the password parameter is required, but should not be saved inside the Helm chart's values.yaml file. Doing so would be a security risk.
 
 For example:
 
 ```bash
-helm install <deployment name> <helm package> --set global.nvidia.password=<NGC_API_KEY>'
+helm install <deployment name> <helm package> -f commandlevel.values.yaml --set global.nvidia.docker.password=<NGC_API_KEY>
 ```
 
-To get your NGC API key:
+Where an example of content for commandlevel.values.yaml is:
+
+```yaml
+nvidia:
+  version: 1
+  nodes:
+  - name: "sc-metro-03"
+    gpus:
+    - id: 0
+      streams:
+      - url: “rtsp://”
+        resolution: “1920 x 1080”
+        framerate: 30
+        encoding: “H264”
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "10Mi"
+      limits:
+        cpu: "120m"
+        memory: "12Mi"
+```
+
+And the operator's NGC API key has been created by:
 
 1. Log in to your enterprise account on the NGC website: https://ngc.nvidia.com
 2. From the user's menu (upper-right corner), select Setup, then click API Key.
