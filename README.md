@@ -3,7 +3,7 @@
 
 This project documents the NVIDIA<small><sup>&reg;</sup></small> Helm chart templates that provide a standard scafolding for deployment of new GPU-accelerated applications on Kubernetes.
 
-For a quick reference to version 1 standard, please refer to: [myco-hello-1/values.yaml](myco-hello-1/values.yaml)
+For a quick reference to version 1 standard, please refer to: [standard-values-v1.yaml](standard-values-v1.yaml)
 
 The document below will guide you on how to use VIDIA<small><sup>&reg;</sup></small> Helm chart templates.
 
