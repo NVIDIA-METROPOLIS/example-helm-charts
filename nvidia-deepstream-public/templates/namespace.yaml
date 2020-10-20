@@ -18,14 +18,16 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+{{- $release := .Release -}}
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
 {{- range $node := $values.nvidia.nodes }}
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
   labels:
     name: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+    app.kubernetes.io/instance: {{ $release.Name }}
+  name: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
 ---
 {{- end }}

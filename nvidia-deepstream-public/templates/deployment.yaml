@@ -18,6 +18,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+
+{{- $release := .Release -}}
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
 {{- range $node := $values.nvidia.nodes }}
@@ -30,6 +32,7 @@ metadata:
     app.version: {{ $chart.AppVersion }}
   labels:
     name: {{ $pod.name }}
+    app.kubernetes.io/instance: {{ $release.Name }}
   name: {{ $pod.name }}
   namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
 spec:
