@@ -37,6 +37,7 @@ data:
   config.txt: |-
     [application]
 {{$appConfig.application | indent 4 }}
+     
 
       {{- if hasKey $appConfig "sinks" }}
       {{- range $key, $sink := $appConfig.sinks }}
@@ -44,7 +45,12 @@ data:
 {{$sink.sink | indent 4 | replace "${gpu_index}" ($index | toString)  }}
       {{- end}}
       {{- end}}
-      
+    [tracker]
+{{$appConfig.tracker | indent 4 | replace "${gpu_index}" ($index | toString)  }} 
+    
+    [tiled-display]
+{{$appConfig.tiled_display | indent 4 | replace "${gpu_index}" ($index | toString)  }}
+     
       {{- if hasKey $appConfig "osd" }}
     [osd]
 {{$appConfig.osd | indent 4 | replace "${gpu_index}" ($index | toString)  }}
@@ -52,30 +58,33 @@ data:
 
       {{- if hasKey $appConfig "streammux" }}
     [streammux]
-{{$appConfig.streammux | indent 4 | replace "${gpu_index}" ($index | toString) }}
+{{$appConfig.streammux | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" (len $gpu.streams | toString) }}
       {{- end}}
 
       {{- if hasKey $appConfig "primarygie" }}
     [primary-gie]
-{{$appConfig.primarygie | indent 4 | replace "${gpu_index}" ($index | toString) }}
+{{$appConfig.primarygie | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" (len $gpu.streams | toString) }}
       {{- end}}
     
       {{- if hasKey $appConfig "secondary_gies" }}
       {{- range $key, $secondary_gies := $appConfig.secondary_gies }}
     [secondary-gie{{ $key | toString}}]
-{{$secondary_gies.secondary_gie | indent 4 | replace "${gpu_index}" ($index | toString)  }}
+{{$secondary_gies.secondary_gie | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" (len $gpu.streams | toString)  }}
       {{- end}}
-      {{- end}}  
+      {{- end}} 
+    
+      {{- if hasKey $appConfig "otherParams" }}
+      {{- range $key, $otherParams := $appConfig.otherParams }} 
+    [tests]
+{{$otherParams.tests | indent 4 }}
+      {{- end}}
+      {{- end}}
       
-      {{- range $index, $gpu := $node.gpus }}
       {{- range $ix, $s1 := $gpu.streams }}
-    [source{{$index | toString}}{{$ix | toString}}]
+    [source{{$ix | toString}}]
 {{$appConfig.sourcesTemplate | indent 4 | replace "${gpu_index}" ($index | toString)| replace "${source_uri}" $s1.url }}
       {{- end}}
-      {{- end}}
-  
-   {{- end}}
-{{- end }}
-
 ---
+   {{- end}}
 
+{{- end }}
