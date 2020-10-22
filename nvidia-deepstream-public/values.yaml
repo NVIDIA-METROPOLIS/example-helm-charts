@@ -123,8 +123,6 @@ pods:
     image: "nvcr.io/nvidia/deepstream:5.0-20.07-triton"
     command: ["/bin/bash"]
     args: ["-c", "/usr/bin/deepstream-app -c /mnt/deepstream-app/config.txt"]
-    ports:
-    - containerPort: 80
     volumeMounts:
     - name: ds-config-volume-gpu-${gpu_index}
       mountPath: /mnt/deepstream-app/
@@ -137,13 +135,7 @@ pods:
   - name: ds-config-volume-gpu-${gpu_index}
     configMap:
       name: dsconfig-gpu-${gpu_index}
-  service:
-    type: NodePort
-    ports:
-    - name: "rtsp"
-      port: 8554
-      targetPort: 8554
-#      nodePort: 30080
+
 
 #
 # ------ DEPLOYMENT SECTION ------------
