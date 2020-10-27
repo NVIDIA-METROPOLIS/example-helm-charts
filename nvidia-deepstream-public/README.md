@@ -4,10 +4,10 @@ This helm chart is a base line deepstream implementation with following key conf
 
 * Sink type 1 
 * Primay gie  
-* resnet10.caffemodel 
+  * resnet10.caffemodel 
 * secondary gies
-* resnet18.caffemodel_b16 - config_infer_secondary_vehicletypes.txt
-* resnet18.caffemodel_b16 - config_infer_secondary_carmake.txt
+  * resnet18.caffemodel_b16 - config_infer_secondary_vehicletypes.txt
+  * resnet18.caffemodel_b16 - config_infer_secondary_carmake.txt
 
 # Install and Run deepstream Helm chart
 
@@ -22,23 +22,23 @@ This helm chart is a base line deepstream implementation with following key conf
 nvidia:
   version: 1
   nodes:
-  - name: "mvp-isv-p1-011"
+  - name: "yournodename"
     gpus:
     - id: 0
       streams:
-      - url: "rtsp://10.124.247.171:554/vod/_definst_/convvideos/sjsu_1080p_15fps_concat_01.mp4"
+      - url: "rtsp://<ipaddress>:<port>/yourstream1.mp4"
         resolution: "1920 x 1080"
         framerate: 30
         encoding: "H264"
 
-      - url:  "rtsp://10.124.247.171:554/vod/_definst_/convvideos/sjsu_1080p_15fps_concat_01.mp4"
+      - url:  "rtsp://<ipaddress>:<port>/yourstream2.mp4"
         resolution: "1920 x 1080"
         framerate: 30
         encoding: "H264"
 
     - id: 1
       streams:
-      - url: "rtsp://10.124.247.171:554/vod/_definst_/convvideos/sjsu_1080p_15fps_concat_01.mp4"
+      - url: "rtsp://<ipaddress>:<port>/yourstream3.mp4"
         resolution: "1920 x 1080"
         framerate: 30
         encoding: "H264"
@@ -141,7 +141,7 @@ nvidia:
     gpus:
     - id: 0
       streams:
-	  - url: "rtsp://10.124.247.171:554/vod/_definst_/convvideos/sjsu_1080p_15fps_concat_01.mp4"
+	  - url: "rtsp://<ipaddress>:<port>/yourstream.mp4"
 	  
 ...
 
@@ -182,7 +182,7 @@ nvidia:
     gpus:
     - id: 0
       streams:
-	  - url: "rtsp://10.124.247.171:554/vod/_definst_/convvideos/sjsu_1080p_15fps_concat_01.mp4"
+	  - url: "rtsp://<ipaddress>:<port>/yourstream.mp4"
 	  
 ...
 
