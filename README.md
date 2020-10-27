@@ -740,14 +740,19 @@ The produced <org name>-<app name>-<version>.tgz is your packaged application He
 
 ## Testing Applications across a firewall
 
-One can test the application across a firewall using the commands:
+One can test the application across a firewall using the following command from your cluster node:
 
 ```bash
 kubectl get services -n <chart name>-<hostname>
+```
+
+Then using the following command from your client/remote computer:
+
+```bash
 ssh -L <local port>:<cluster IP>:<target port> <username>@<hostname>
 ```
 
-Then open your browser to:
+Then, from your client/remote computer, open the browser to:
 
 ```
 http://localhost:<local port>
