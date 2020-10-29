@@ -252,13 +252,14 @@ nvidia:
   version: 1
   nodes:
   - name: "sc-metro-03"
+    license: "secret"
     gpus:
     - id: 0
       streams:
-      - url: “rtsp://”
-        resolution: “1920 x 1080”
+      - url: "rtsp://"
+        resolution: "1920 x 1080"
         framerate: 30
-        encoding: “H264”
+        encoding: "H264"
     resources:
       requests:
         cpu: "100m"
@@ -295,13 +296,14 @@ nvidia:
   version: 1
   nodes:
   - name: "sc-metro-03"
+    license: "secret"
     gpus:
     - id: 0
       streams:
-      - url: “rtsp://”
-        resolution: “1920 x 1080”
+      - url: "rtsp://"
+        resolution: "1920 x 1080"
         framerate: 30
-        encoding: “H264”
+        encoding: "H264"
     resources:
       requests:
         cpu: "100m"
@@ -671,13 +673,14 @@ TBD
       version: 1
       nodes:
       - name: "sc-metro-03"
+        license: "secret"
         gpus:
         - id: 0
           streams:
-          - url: “rtsp://”
-            resolution: “1920 x 1080”
+          - url: "rtsp://"
+            resolution: "1920 x 1080"
             framerate: 30
-            encoding: “H264”
+            encoding: "H264"
         resources:
           requests:
             cpu: "100m"
