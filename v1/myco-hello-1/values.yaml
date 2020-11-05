@@ -1,0 +1,74 @@
+# Default values for myco-hello.
+# This is a YAML-formatted file.
+
+#
+# ------ APPLICATION SECTION ------------
+#
+
+pods:
+- name: hello
+  replicas: 1
+  containers:
+  - name: hello
+#    image: "nvcr.io/isv-myco/hello:2.0.0"
+    image: "centos:7"
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      cd $HTML_ROOT;
+      echo hello > index.html;
+      python -m SimpleHTTPServer 80;
+    env:
+    - name: HTML_ROOT
+      value: "/tmp"
+    ports:
+    - containerPort: 80
+    nvidia:
+      nvidiaDevicePlugin:
+        autoGpu: yes
+  service:
+    type: ClusterIP
+    ports:
+    - name: http
+      port: 80
+      targetPort: 80
+
+
+#
+# ------ DEPLOYMENT SECTION ------------
+#
+
+# Below Values must remain compatible with NVIDIA Metropolis Portal
+# The following is an example for 1 stream 
+# An operator should customize the hostnames, GPU IDs and streams information before deployment
+# When not using nvidiaDevicePlugin, the GPU IDs are assuming PCI BUS order
+
+nvidia:
+  version: 1
+  nodes:
+  - name: "sc-metro-03"
+    gpus:
+    - id: 0
+      streams:
+      - url: "rtsp://"
+        resolution: "1920 x 1080"
+        framerate: 30
+        encoding: "H264"
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "10Mi"
+      limits:
+        cpu: "120m"
+        memory: "12Mi"
+
+global:
+  nvidia:
+    version: 1
+    docker:
+      imagePullSecret: imagepullsecret
+# For Non-EGX deployment only: Please set password to your NGC API KEY
+      registry: "nvcr.io"
+      username: "$oauthtoken"
+      password: ""
+

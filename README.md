@@ -1,15 +1,19 @@
 
-# Kubernetes (K8) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>
+# Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>
 
 This project documents the NVIDIA<small><sup>&reg;</sup></small> Helm chart templates that provide a standard scafolding for deployment of new GPU-accelerated applications on Kubernetes.
 
-For a quick reference to version 1 standard, please refer to: [standard-values-v1.yaml](standard-values-v1.yaml)
+If you are looking at porting an existing Helm chart, you can re-use by making it comply with [Required features to be implamented](#required-features-to-be-implemented).
 
-The document below will guide you on how to use NVIDIA<small><sup>&reg;</sup></small> Helm chart templates.
+For a quick reference to current standard values, please refer to: [standard-values-current.yaml](standard-values-current.yaml)
+
+If you are starting with Helm charts, we highly suggest that you take advantage of the provided samples and included templates.
+
+The document below will guide you on how to use NVIDIA<small><sup>&reg;</sup></small> Helm chart templates and easily build a compliant Helm chart.
 
 ## Table of Content
 
-- [Kubernetes (K8) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>](#kubernetes--k8--helm-packaging-and-delivery-for-nvidia-reg-)
+- [Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>](#kubernetes--k8--helm-packaging-and-delivery-for-nvidia-reg-)
   * [Pre-requisites](#pre-requisites)
   * [Kubernetes](#kubernetes)
   * [Helm Charts](#helm-charts)
@@ -42,11 +46,11 @@ Dockerized application with some understanding of kubernetes.
 
 [Kubernetes](https://kubernetes.io/) is a very popular opensource container deployment and orchestration framework.
 
-Among other things, K8 allows the deployment of software solutions (containerized) at scale, and better management and control of resource utilization.
+Among other things, K8s allows the deployment of software solutions (containerized) at scale, and better management and control of resource utilization.
 
-Application bring up in K8 environments are carried out mostly with a set of manifest files that deals with running the workload (real time & batch) and managing access to applications (APIs/UIs).
+Application bring up in K8s environments are carried out mostly with a set of manifest files that deals with running the workload (real time & batch) and managing access to applications (APIs/UIs).
 
-More information on K8 can be found at: https://kubernetes.io/docs/concepts/overview/components/
+More information on K8s can be found at: https://kubernetes.io/docs/concepts/overview/components/
 
 Additional learning resources:
 
@@ -84,11 +88,12 @@ Using the templates and following the standard structure will minimize the time 
 ```
 .
 ├── LICENSE
-├── myco-hello-1  <-- First Helm chart sample
-├── myco-hello-2  <-- Second Helm chart sample
-├── myco-hello-3  <-- Third Helm chart sample
-├── nvidia-deepstream-public  <-- Forth Helm chart sample
-└── README.md  <-- This document
+├── README.md  <-- This document
+└── v1 
+    ├── myco-hello-1  <-- First Helm chart sample
+    ├── myco-hello-2  <-- Second Helm chart sample
+    ├── myco-hello-3  <-- Third Helm chart sample
+    └── nvidia-deepstream-public  <-- Forth Helm chart sample
 ```
 
 ## Layout of an NVIDIA<small><sup>&reg;</sup></small> standard Helm chart
@@ -548,7 +553,7 @@ Config maps can use one of the following methods to source the configuration dat
 - dataFromValueAsText: source must point to an Helm values parameter, and the value is treated as raw text.
 - dataFromValueAsYaml: source must point to an Helm values parameter, and the value is treated as yaml data.
 - dataFromFile: source must point to the config file, with a path relative to root of the helm chart.
-- data: is the raw yaml data in a format that can be includeed as-is as K8 config map data.
+- data: is the raw yaml data in a format that can be includeed as-is as K8s config map data.
 
 A config map can be consumed by containers as a volume where the data file will be mounted. For example:
 
@@ -653,7 +658,7 @@ pods:
   ...
 ```
 
-A more detailed exmaple for dynamic config maps can be found in the Helm chart sample [nvidia-deepstream-public](nvidia-deepstream-public).
+A more detailed exmaple for dynamic config maps can be found in the nvidia-deepstream-public Helm chart sample.
 
 ### Ingress Path
 

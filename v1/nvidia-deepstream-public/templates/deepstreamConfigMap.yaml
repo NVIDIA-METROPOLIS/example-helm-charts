@@ -1,0 +1,90 @@
+# Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+{{- $chart := .Chart -}}
+{{- $values := .Values -}}
+{{- $appConfig := $values.deepstream.configs }}
+{{- range $node := $values.nvidia.nodes }}
+   {{- range $index, $gpu := $node.gpus }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    app: {{ $chart.Name }}
+    app.version: {{ $chart.AppVersion }}
+  labels:
+    name: dsconfig-gpu-{{ $index }}
+  name: dsconfig-gpu-{{ $index }}
+  namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+data: 
+  config.txt: |-
+    [application]
+{{$appConfig.application | indent 4 }}
+     
+
+      {{- if hasKey $appConfig "sinks" }}
+      {{- range $key, $sink := $appConfig.sinks }}
+    [sink{{$key | toString}}]
+{{$sink.sink | indent 4 | replace "${gpu_index}" ($index | toString)  }}
+      {{- end}}
+      {{- end}}
+    [tracker]
+{{$appConfig.tracker | indent 4 | replace "${gpu_index}" ($index | toString)  }} 
+    
+    [tiled-display]
+{{$appConfig.tiled_display | indent 4 | replace "${gpu_index}" ($index | toString)  }}
+     
+      {{- if hasKey $appConfig "osd" }}
+    [osd]
+{{$appConfig.osd | indent 4 | replace "${gpu_index}" ($index | toString)  }}
+      {{- end}}
+
+      {{- if hasKey $appConfig "streammux" }}
+    [streammux]
+{{$appConfig.streammux | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" (len $gpu.streams | toString) }}
+      {{- end}}
+
+      {{- if hasKey $appConfig "primarygie" }}
+    [primary-gie]
+{{$appConfig.primarygie | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" (len $gpu.streams | toString) }}
+      {{- end}}
+    
+      {{- if hasKey $appConfig "secondary_gies" }}
+      {{- range $key, $secondary_gies := $appConfig.secondary_gies }}
+    [secondary-gie{{ $key | toString}}]
+{{$secondary_gies.secondary_gie | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" (len $gpu.streams | toString)  }}
+      {{- end}}
+      {{- end}} 
+    
+      {{- if hasKey $appConfig "otherParams" }}
+      {{- range $key, $otherParams := $appConfig.otherParams }} 
+    [tests]
+{{$otherParams.tests | indent 4 }}
+      {{- end}}
+      {{- end}}
+      
+      {{- range $ix, $s1 := $gpu.streams }}
+    [source{{$ix | toString}}]
+{{$appConfig.sourcesTemplate | indent 4 | replace "${gpu_index}" ($index | toString)| replace "${source_uri}" $s1.url }}
+      {{- end}}
+---
+   {{- end}}
+
+{{- end }}
