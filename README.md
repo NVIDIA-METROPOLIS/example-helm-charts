@@ -46,12 +46,11 @@ Among other things, K8s allows the deployment of software solutions (containeriz
 
 Application bring up in K8s environments are carried out mostly with a set of manifest files that deals with running the workload (real time & batch) and managing access to applications (APIs/UIs).
 
-More information on K8s can be found at: https://kubernetes.io/docs/concepts/overview/components/
+More information on K8s can be found at https://kubernetes.io/docs/concepts/overview/components/
 
 Additional learning resources:
-
-https://www.katacoda.com/courses/kubernetes
-https://www.katacoda.com/courses/kubernetes/playground
+* https://www.katacoda.com/courses/kubernetes
+* https://www.katacoda.com/courses/kubernetes/playground
 
 ## Helm Charts
 
