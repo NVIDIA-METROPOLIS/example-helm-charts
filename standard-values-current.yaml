@@ -38,3 +38,4 @@ global:
       registry: "nvcr.io"
       username: "$oauthtoken"
       password: ""
+

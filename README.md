@@ -761,3 +761,8 @@ Then, from your client/remote computer, open the browser to:
 http://localhost:<local port>
 ```
 
+
+---
+
+<small>&copy;</small> Copyright 2019-2020, NVIDIA Corporation
+
