@@ -93,7 +93,7 @@ Using the templates and following the standard structure will minimize the time 
     ├── myco-hello-1  <-- First Helm chart sample
     ├── myco-hello-2  <-- Second Helm chart sample
     ├── myco-hello-3  <-- Third Helm chart sample
-    └── nvidia-deepstream-public  <-- Forth Helm chart sample
+    └── nvidia-deepstream-public  <-- Fourth Helm chart sample
 ```
 
 ## Layout of an NVIDIA<small><sup>&reg;</sup></small> standard Helm chart
