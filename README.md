@@ -56,7 +56,7 @@ Additional learning resources:
 
 Helm chart is a method to compose, package and deliver all the Kubernetes manifest components of your application as a single unit for final deployment on a Kubernetes cluster.
 
-More details on Helm charts can be found at: https://helm.sh/
+More details on Helm charts can be found at https://helm.sh/
 
 Helm chart is the mechanism of deployment on an NVIDIA<small><sup>&reg;</sup></small> environment.
 
@@ -315,7 +315,7 @@ nvidia:
 
 And the operator's NGC API key has been created by:
 
-1. Log in to your enterprise account on the NGC website: https://ngc.nvidia.com
+1. Log in to your enterprise account on the NGC website https://ngc.nvidia.com
 2. From the user's menu (upper-right corner), select Setup, then click API Key.
 3. On the API Key page, click Generate API Key.
 4. In response to the warning that your old API Key will become invalid, click CONTINUE to generate the key. Your API key is displayed with examples of how to use it.
@@ -465,7 +465,7 @@ pods:
 
 Persistent volumes are storage spaces that depend on a Kubernetes storage provider (identified by storage class name).
 
-More information about storage classes can be found at: https://kubernetes.io/docs/concepts/storage/storage-classes/
+More information about storage classes can be found at https://kubernetes.io/docs/concepts/storage/storage-classes/
 
 Here is an example for installing the local-path storage class:
 
