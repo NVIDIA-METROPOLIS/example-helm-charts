@@ -11,7 +11,7 @@ If you are starting with Helm charts, we highly suggest that you take advantage 
 
 The document below will guide you on how to use NVIDIA<small><sup>&reg;</sup></small> Helm chart templates and easily build a compliant Helm chart.
 
-## Table of Content
+## Table of Contents
 
 - [Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>](#kubernetes--k8--helm-packaging-and-delivery-for-nvidia-reg-)
   * [Pre-requisites](#pre-requisites)
