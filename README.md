@@ -1,9 +1,9 @@
 
 # Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>
 
-This project documents the NVIDIA<small><sup>&reg;</sup></small> Helm chart templates that provide a standard scafolding for deployment of new GPU-accelerated applications on Kubernetes.
+This project documents the NVIDIA<small><sup>&reg;</sup></small> Helm chart templates that provide a standard scaffolding for deployment of new GPU-accelerated applications on Kubernetes.
 
-If you are looking at porting an existing Helm chart, you can re-use by making it comply with: [Required features to be implamented](#required-features-to-be-implemented). For a quick reference to current standard values, please refer to: [standard-values-current.yaml](standard-values-current.yaml)
+If you are looking at porting an existing Helm chart, you can re-use by making it comply with: [Required features to be implemented](#required-features-to-be-implemented). For a quick reference to current standard values, please refer to: [standard-values-current.yaml](standard-values-current.yaml)
 
 If you are starting with Helm charts, we highly suggest that you take advantage of the provided samples and included templates. The document below will guide you on how to use NVIDIA<small><sup>&reg;</sup></small> Helm chart templates and easily build a compliant Helm chart.
 
@@ -72,9 +72,9 @@ If you are starting new on kubernetes and helm please note: An NVIDIA<small><sup
 
 The starter templates can be found in this project's subfolders.
 
-We highly suggest to use this set of templates for your basic deplyments. But one can supplement these templates as per app-specific requirements.
+We highly suggest using this set of templates for your basic deployments. But one can supplement these templates as per app-specific requirements.
 
-The following document will discribe in details the usage of the templates.
+The following document will describe in details the usage of the templates.
 
 Using the templates and following the standard structure will minimize the time required to develop an NVIDIA<small><sup>&reg;</sup></small> compatible Helm chart.
 
@@ -118,7 +118,7 @@ The samples included in this project come with templates that form a scaffolding
 
 One can deploy each sample after overriding the nvidia.nodes hostnames and global.nvidia.docker.password from the helm package's values.yaml.
 
-Overriding these parameters can be achieved by creating a new values file or explicitely set a parameter in the command line ,i.e. commandlevel.values.yaml, holding the modified 'nvidia' section.
+Overriding these parameters can be achieved by creating a new values file or explicitly set a parameter in the command line ,i.e. commandlevel.values.yaml, holding the modified 'nvidia' section.
 
 Here is an example deployment command line using Helm 3:
 
@@ -160,7 +160,7 @@ This values.yaml file is located under root folder of the helm chart.
 
 The purpose of this values.yaml file is to define all the parameters necessary to bring up and run the application in a default setting.
 
-These default parameters can be overriden using arguments on the 'helm install' command line at time of deployment.
+These default parameters can be overridden using arguments on the 'helm install' command line at time of deployment.
 
 For example, using Helm 3:
 
@@ -170,7 +170,7 @@ helm install <deployment name> <helm package> -f commandlevel.values.yaml --set 
 
 Command level values are useful to override NVIDIA<small><sup>&reg;</sup></small> standard configuration parameters affecting the current deployment.
 
-Examples of value.yaml files can be found bellow.
+Examples of values.yaml files can be found bellow.
 
 ## Values.yaml file layout
 
@@ -428,7 +428,7 @@ Kubernetes uses cluster IPs and target ports to make container ports reachable w
 
 In order to reach a service from outside the Kubernetes cluster using any node IP address, but within a local network, one can use 'NodePort' as the service type. Note that reachability using IP address outside of the cluster is usually not needed if defining an inbound path for the application.
 
-If one does use node ports, please note that defining static 'nodePort' ports parameter will break multi-nodes deploment capability because node ports have to be unique within the entire cluster and our templates duplicate your application PODs on each targeted node.
+If one does use node ports, please note that defining static 'nodePort' ports parameter will break multi-node deployment capability because node ports have to be unique within the entire cluster and our templates duplicate your application PODs on each targeted node.
 
 One can list services and allocated ports after deployment using the command line.
 
@@ -440,7 +440,7 @@ kubectl get services -n <chart name>-<hostname>
 
 ### Init-Containers
 
-Init containers are containers that execute once before normal containers. The normal POD containers will not be started before all init-containers have been sucessfully executed.
+Init containers are containers that execute once before normal containers. The normal POD containers will not be started before all init-containers have been successfully executed.
 
 The init-containers definition follows the same pattern as normal containers, but do not support the 'nvidia' parameters for GPU assignment:
 
@@ -475,7 +475,7 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisione
 
 When using a persistent volume, one should add a note in the application Helm chart's README.md stating that dependency.
 
-Volumes can be mounted on both, init-containers and containers, using the folowing pattern:
+Volumes can be mounted on both, init-containers and containers, using the following pattern:
 
 ```yaml
 pods:
@@ -507,7 +507,7 @@ In this case, an operator should be notified in the chart's README.md that he ha
 
 ### Other volumes
 
-Other volumes can be defined. Below are a few exmaples of volumes from config map, empty dir and host path:
+Other volumes can be defined. Below are a few examples of volumes from config map, empty dir and host path:
 
 ```yaml
 pods:
@@ -548,7 +548,7 @@ Config maps can use one of the following methods to source the configuration dat
 - dataFromValueAsText: source must point to an Helm values parameter, and the value is treated as raw text.
 - dataFromValueAsYaml: source must point to an Helm values parameter, and the value is treated as yaml data.
 - dataFromFile: source must point to the config file, with a path relative to root of the helm chart.
-- data: is the raw yaml data in a format that can be includeed as-is as K8s config map data.
+- data: is the raw yaml data in a format that can be included as-is as K8s config map data.
 
 A config map can be consumed by containers as a volume where the data file will be mounted. For example:
 
@@ -653,7 +653,7 @@ pods:
   ...
 ```
 
-A more detailed exmaple for dynamic config maps can be found in the nvidia-deepstream-public Helm chart sample.
+A more detailed example for dynamic config maps can be found in the nvidia-deepstream-public Helm chart sample.
 
 ### Ingress Path
 
@@ -730,7 +730,7 @@ Name your Helm chart <org name>-<app name> in Chart.yaml file.
 Add your app and chart versions to the Chart.yaml file as well.
 
 Compose your LICENSE and README.md files.
-Optionnaly, you can add a templates/NOTES.txt app-specific template file.
+Optionally, you can add a templates/NOTES.txt app-specific template file.
 
 Use the commands:
 
