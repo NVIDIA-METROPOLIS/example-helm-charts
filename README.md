@@ -3,15 +3,11 @@
 
 This project documents the NVIDIA<small><sup>&reg;</sup></small> Helm chart templates that provide a standard scafolding for deployment of new GPU-accelerated applications on Kubernetes.
 
-If you are looking at porting an existing Helm chart, you can re-use by making it comply with: [Required features to be implamented](#required-features-to-be-implemented).
+If you are looking at porting an existing Helm chart, you can re-use by making it comply with: [Required features to be implamented](#required-features-to-be-implemented). For a quick reference to current standard values, please refer to: [standard-values-current.yaml](standard-values-current.yaml)
 
-For a quick reference to current standard values, please refer to: [standard-values-current.yaml](standard-values-current.yaml)
+If you are starting with Helm charts, we highly suggest that you take advantage of the provided samples and included templates. The document below will guide you on how to use NVIDIA<small><sup>&reg;</sup></small> Helm chart templates and easily build a compliant Helm chart.
 
-If you are starting with Helm charts, we highly suggest that you take advantage of the provided samples and included templates.
-
-The document below will guide you on how to use NVIDIA<small><sup>&reg;</sup></small> Helm chart templates and easily build a compliant Helm chart.
-
-## Table of Contents
+## Table of Content
 
 - [Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>](#kubernetes--k8--helm-packaging-and-delivery-for-nvidia-reg-)
   * [Pre-requisites](#pre-requisites)
@@ -93,7 +89,7 @@ Using the templates and following the standard structure will minimize the time 
     ├── myco-hello-1  <-- First Helm chart sample
     ├── myco-hello-2  <-- Second Helm chart sample
     ├── myco-hello-3  <-- Third Helm chart sample
-    └── nvidia-deepstream-public  <-- Fourth Helm chart sample
+    └── nvidia-deepstream-public  <-- Forth Helm chart sample
 ```
 
 ## Layout of an NVIDIA<small><sup>&reg;</sup></small> standard Helm chart
