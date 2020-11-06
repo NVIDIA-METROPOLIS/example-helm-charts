@@ -3,7 +3,7 @@
 
 This project documents the NVIDIA<small><sup>&reg;</sup></small> Helm chart templates that provide a standard scafolding for deployment of new GPU-accelerated applications on Kubernetes.
 
-If you are looking at porting an existing Helm chart, you can re-use by making it comply with [Required features to be implamented](#required-features-to-be-implemented).
+If you are looking at porting an existing Helm chart, you can re-use by making it comply with: [Required features to be implamented](#required-features-to-be-implemented).
 
 For a quick reference to current standard values, please refer to: [standard-values-current.yaml](standard-values-current.yaml)
 
