@@ -1,0 +1,187 @@
+# Default values for NVIDIA-DeepStream
+# This is a YAML-formatted file.
+# NOTE: Only one container can set nvidia.nvidiaDevicePlugin.autoGpu
+
+#
+# ------ APPLICATION SECTION ------------
+#
+
+#
+# App-specific configuration
+#
+deepstream:
+   configs:
+      application: |-
+        enable-perf-measurement=1
+        perf-measurement-interval-sec=5
+      tiled_display: |-
+            enable=1
+            rows=2
+            columns=2
+            width=1280
+            height=720
+            gpu-id=0
+            nvbuf-memory-type=0
+      sinks:
+        - sink: |-
+            enable=0
+            type=1
+            gpu-id=0
+            nvbuf-memory-type=0
+      sourcesTemplate: |-
+        enable=1
+        type=3
+        uri=${source_uri}
+        num-sources=1
+        gpu-id=0
+        cudadec-memtype=0 
+      osd: |-
+        enable=0
+        gpu-id=0
+        border-width=1
+        text-size=15
+        text-color=1;1;1;1;
+        text-bg-color=0.3;0.3;0.3;1
+        font=Arial
+        show-clock=0
+        clock-x-offset=800
+        clock-y-offset=820
+        clock-text-size=12
+        clock-color=1;0;0;0
+        cuda-memory-type=1
+      streammux: |-
+        gpu-id=0
+        live-source=0
+        batch-size=${batch}
+        batched-push-timeout=40000
+        width=1920
+        height=1080
+        enable-padding=0
+        nvbuf-memory-type=0
+      primarygie: |-
+        enable=1
+        gpu-id=0
+        model-engine-file=/opt/nvidia/deepstream/deepstream-5.0/samples/models/Primary_Detector/resnet10.caffemodel_b4_gpu${gpu_index}_int8.engine
+        batch-size=${batch}
+        bbox-border-color0=1;0;0;1
+        bbox-border-color1=0;1;1;1
+        bbox-border-color2=0;0;1;1
+        bbox-border-color3=0;1;0;1
+        interval=0
+        gie-unique-id=1
+        nvbuf-memory-type=0
+        config-file=/opt/nvidia/deepstream/deepstream-5.0/samples/configs/deepstream-app/config_infer_primary.txt
+      tracker: |-
+        enable=1
+        tracker-width=640
+        tracker-height=384
+        ll-lib-file=/opt/nvidia/deepstream/deepstream-5.0/lib/libnvds_mot_klt.so
+        gpu-id=0
+        enable-batch-process=1
+        enable-past-frame=0
+        display-tracking-id=1
+      secondary_gies:
+        - secondary_gie: |-
+            enable=1
+            model-engine-file=/opt/nvidia/deepstream/deepstream-5.0/samples/models/Secondary_VehicleTypes/resnet18.caffemodel_b16_gpu${gpu_index}_int8.engine
+            gpu-id=0
+            batch-size=${batch}
+            gie-unique-id=4
+            operate-on-gie-id=1
+            operate-on-class-ids=0;
+            config-file=/opt/nvidia/deepstream/deepstream-5.0/samples/configs/deepstream-app/config_infer_secondary_vehicletypes.txt
+        - secondary_gie: |-
+            enable=1
+            model-engine-file=/opt/nvidia/deepstream/deepstream-5.0/samples/models/Secondary_VehicleTypes/resnet18.caffemodel_b16_gpu${gpu_index}_int8.engine
+            gpu-id=0
+            batch-size=${batch}
+            gie-unique-id=5
+            operate-on-gie-id=1
+            operate-on-class-ids=0;
+            config-file=/opt/nvidia/deepstream/deepstream-5.0/samples/configs/deepstream-app/config_infer_secondary_vehicletypes.txt
+        - secondary_gie: |-
+            enable=0
+            model-engine-file=/opt/nvidia/deepstream/deepstream-5.0/samples/models/Secondary_CarMake/resnet18.caffemodel_b16_gpu${gpu_index}_int8.engine
+            batch-size=${batch}
+            gpu-id=0
+            gie-unique-id=6
+            operate-on-gie-id=1
+            operate-on-class-ids=0;
+            config-file=/opt/nvidia/deepstream/deepstream-5.0/samples/configs/deepstream-app/config_infer_secondary_carmake.txt
+      otherParams: 
+        - tests: |-
+            file-loop=1
+
+#
+# Required PODs definition for App 
+#
+pods:
+- name: deepstream
+  replicas: 1
+  containers:
+  - name: deepstream
+    image: "nvcr.io/nvidia/deepstream:5.0-20.07-triton"
+    command: ["/bin/bash"]
+    args: ["-c", "/usr/bin/deepstream-app -c /mnt/deepstream-app/config.txt"]
+    volumeMounts:
+    - name: ds-config-volume-gpu-${gpu_index}
+      mountPath: /mnt/deepstream-app/
+    nvidia:
+      singleGpuPerContainer: yes
+      nvidiaDevicePlugin:
+        autoGpu: true
+
+  volumes:
+  - name: ds-config-volume-gpu-${gpu_index}
+    configMap:
+      name: dsconfig-gpu-${gpu_index}
+
+
+#
+# ------ DEPLOYMENT SECTION ------------
+#
+
+# Below Values will be overriden by NVIDIA Metropolis Portal
+# The following is an example for 1 video stream
+# An operator will be asked to customize the hostnames, GPU IDs and streams information
+# GPU IDs are PCI BUS order
+
+nvidia:
+  version: 1
+  nodes:
+  - name: "yournodename"
+    gpus:
+    - id: 0
+      streams:
+      - url: "rtsp://<ipaddress>:<port>/yourstream1.mp4"
+        resolution: "1920 x 1080"
+        framerate: 30
+        encoding: "H264"
+
+      - url:  "rtsp://<ipaddress>:<port>/yourstream2.mp4"
+        resolution: "1920 x 1080"
+        framerate: 30
+        encoding: "H264"
+
+    - id: 1
+      streams:
+      - url: "rtsp://<ipaddress>:<port>/yourstream3.mp4"
+        resolution: "1920 x 1080"
+        framerate: 30
+        encoding: "H264" 
+     
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "2Gi"
+
+global:
+  nvidia:
+    version: 1
+    docker:
+      imagePullSecret: imagepullsecret
+# For Non-EGX deployment only: Please set password to your NGC API KEY
+      registry: "nvcr.io"
+      username: "$oauthtoken"
+      password: ""
+

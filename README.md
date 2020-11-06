@@ -1,23 +1,23 @@
 
-# Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>
+# Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA
 
-This project documents the NVIDIA<small><sup>&reg;</sup></small> Helm chart templates that provide a standard scaffolding for deployment of new GPU-accelerated applications on Kubernetes.
+This project documents the NVIDIA Helm chart templates that provide a standard scaffolding for deployment of new GPU-accelerated applications on Kubernetes.
 
 If you are looking at porting an existing Helm chart, you can re-use by complying with [Required features to be implemented](#required-features-to-be-implemented). For a quick reference to current standard values, please refer to [standard-values-current.yaml](standard-values-current.yaml)
 
-If you are starting with Helm charts, we highly suggest that you take advantage of the provided samples and included templates. The document below will guide you on how to use NVIDIA<small><sup>&reg;</sup></small> Helm chart templates and easily build a compliant Helm chart.
+If you are starting with Helm charts, we highly suggest that you take advantage of the provided samples and included templates. The document below will guide you on how to use NVIDIA Helm chart templates and easily build a compliant Helm chart.
 
 ## Table of Content
 
-- [Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA<small><sup>&reg;</sup></small>](#kubernetes--k8--helm-packaging-and-delivery-for-nvidia-reg-)
+- [Kubernetes (K8s) Helm Packaging and Delivery for NVIDIA](#kubernetes--k8--helm-packaging-and-delivery-for-nvidia)
   * [Pre-requisites](#pre-requisites)
   * [Kubernetes](#kubernetes)
   * [Helm Charts](#helm-charts)
-  * [NVIDIA<small><sup>&reg;</sup></small> Helm starter templates](#nvidia-reg--helm-starter-templates)
+  * [NVIDIA Helm starter templates](#nvidia-helm-starter-templates)
   * [Layout of this project](#layout-of-this-project)
-  * [Layout of an NVIDIA<small><sup>&reg;</sup></small> standard Helm chart](#layout-of-an-nvidia-reg--standard-helm-chart)
+  * [Layout of an NVIDIA standard Helm chart](#layout-of-an-nvidia-standard-helm-chart)
   * [Helm chart samples](#helm-chart-samples)
-  * [NVIDIA<small><sup>&reg;</sup></small> Helm values.yaml file](#nvidia-reg--helm-valuesyaml-file)
+  * [NVIDIA Helm values.yaml file](#nvidia-helm-valuesyaml-file)
   * [Values.yaml file layout](#valuesyaml-file-layout)
     + [The Deployment Section](#the-deployment-section)
     + [The Application Section](#the-application-section)
@@ -58,17 +58,17 @@ Helm chart is a method to compose, package and deliver all the Kubernetes manife
 
 More details on Helm charts can be found at https://helm.sh/
 
-Helm chart is the mechanism of deployment on an NVIDIA<small><sup>&reg;</sup></small> environment.
+Helm chart is the mechanism of deployment on an NVIDIA environment.
 
 The samples provided in this project support both versions: Helm 2 and Helm 3.
 
-To be NVIDIA<small><sup>&reg;</sup></small> compatible, an Helm chart should implement a helm package that include specific parameters in its values.yaml file.
+To be NVIDIA compatible, an Helm chart should implement a helm package that include specific parameters in its values.yaml file.
 
 Details of the values.yaml file are described bellow.
 
-## NVIDIA<small><sup>&reg;</sup></small> Helm starter templates
+## NVIDIA Helm starter templates
 
-If you are starting new on kubernetes and helm please note: An NVIDIA<small><sup>&reg;</sup></small> compatible values.yaml file configuration is necessary.
+If you are starting new on kubernetes and helm please note: An NVIDIA compatible values.yaml file configuration is necessary.
 
 The starter templates can be found in this project's subfolders.
 
@@ -76,7 +76,7 @@ We highly suggest using this set of templates for your basic deployments. But on
 
 The following document will describe in details the usage of the templates.
 
-Using the templates and following the standard structure will minimize the time required to develop an NVIDIA<small><sup>&reg;</sup></small> compatible Helm chart.
+Using the templates and following the standard structure will minimize the time required to develop an NVIDIA compatible Helm chart.
 
 ## Layout of this project
 
@@ -88,10 +88,10 @@ Using the templates and following the standard structure will minimize the time 
     ├── myco-hello-1  <-- First Helm chart sample
     ├── myco-hello-2  <-- Second Helm chart sample
     ├── myco-hello-3  <-- Third Helm chart sample
-    └── nvidia-deepstream-public  <-- Forth Helm chart sample
+    └── nvidia-deepstream-public  <-- Fourth Helm chart sample
 ```
 
-## Layout of an NVIDIA<small><sup>&reg;</sup></small> standard Helm chart
+## Layout of an NVIDIA standard Helm chart
 
 ```
 .
@@ -154,7 +154,7 @@ Each sample introduces a specific set of features:
 
     This is an example using the Public NVIDIA Deepstream SDK that introduces dynamic config maps.
 
-## NVIDIA<small><sup>&reg;</sup></small> Helm values.yaml file
+## NVIDIA Helm values.yaml file
 
 This values.yaml file is located under root folder of the helm chart.
 
@@ -168,7 +168,7 @@ For example, using Helm 3:
 helm install <deployment name> <helm package> -f commandlevel.values.yaml --set global.nvidia.docker.password=<NGC_API_KEY>
 ```
 
-Command level values are useful to override NVIDIA<small><sup>&reg;</sup></small> standard configuration parameters affecting the current deployment.
+Command level values are useful to override NVIDIA standard configuration parameters affecting the current deployment.
 
 Examples of values.yaml files can be found bellow.
 
@@ -342,7 +342,7 @@ pods:
   ...
 ```
 
-Each container must define an image source under NVIDIA<small><sup>&reg;</sup></small> NGC or public domain:
+Each container must define an image source under NVIDIA NGC or public domain:
 
 ```yaml
     image: "nvcr.io/isv-myco/hello-1:2.0.0"
@@ -661,7 +661,7 @@ TBD
 
 ## Required features to be implemented
 
-1. The delivered Helm package is expected to implement a Helm configuration values.yaml file compatible with deployment NVIDIA<small><sup>&reg;</sup></small> specifications. Below is an sample for the Deployment specifications:
+1. The delivered Helm package is expected to implement a Helm configuration values.yaml file compatible with deployment NVIDIA specifications. Below is an sample for the Deployment specifications:
 
     ```yaml
     # Below Values must remain compatible with NVIDIA Metropolis Portal
