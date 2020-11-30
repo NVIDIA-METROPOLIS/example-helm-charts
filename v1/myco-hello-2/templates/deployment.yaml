@@ -108,8 +108,6 @@ spec:
 {{- with $container.volumeMounts }}
 {{ toYaml . | replace "${gpu_index}" ($index | toString)| indent 8 }}
 {{- end }}
-        securityContext:
-          privileged: true
         resources:
 {{- if $container.resources }}
           requests:
@@ -159,8 +157,6 @@ spec:
 {{- with $container.volumeMounts }}
 {{ toYaml . | indent 8 }}
 {{- end }}
-        securityContext:
-          privileged: true
         resources:
 {{- if $container.resources }}
           requests:

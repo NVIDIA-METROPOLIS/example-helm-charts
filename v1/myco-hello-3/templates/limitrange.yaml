@@ -22,6 +22,7 @@
 {{- $chart := .Chart -}}
 {{- $values := .Values -}}
 {{- range $node := $values.nvidia.nodes }}
+{{- if hasKey $node "resources" }}
 apiVersion: v1
 kind: LimitRange
 metadata:
@@ -42,4 +43,5 @@ spec:
 {{- end }}
     type: Container
 ---
+{{- end }}
 {{- end }}
