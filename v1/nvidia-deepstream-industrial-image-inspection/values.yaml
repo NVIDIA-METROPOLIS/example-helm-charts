@@ -1,0 +1,129 @@
+# Default values for NVIDIA-DeepStream
+# This is a YAML-formatted file.
+# NOTE: Only one container can set nvidia.nvidiaDevicePlugin.autoGpu
+
+#
+# ------ APPLICATION SECTION ------------
+#
+
+#
+# App-specific configuration
+#
+deepstream:
+   batchsize: 8
+   configs:
+      application: |-
+        enable-perf-measurement=1
+        perf-measurement-interval-sec=5
+      property: |-
+        gpu-id=0
+        net-scale-factor=1.0
+        model-color-format=0
+        #uff-file=/opt/nvidia/deepstream/deepstream-5.0/samples/models/Segmentation/industrial/unet_output_graph.uff
+        uff-file=/opt/nvidia/deepstream/deepstream-5.0/samples/models/Segmentation/semantic/unetres18_v4_pruned0.65_800_data.uff
+        infer-dims=3;512;512
+        uff-input-order=0
+        uff-input-blob-name=data
+        batch-size=2
+        ## 0=FP32, 1=INT8, 2=FP16 mode
+        network-mode=0
+        num-detected-classes=4
+        interval=0
+        gie-unique-id=1
+        network-type=2
+        output-blob-names=final_conv/BiasAdd
+        segmentation-threshold=0.0
+        #parse-bbox-func-name=NvDsInferParseCustomSSD
+        #custom-lib-path=nvdsinfer_custom_impl_ssd/libnvdsinfer_custom_impl_ssd.so
+        #scaling-filter=0
+        #scaling-compute-hw=0
+      class_attrs_all: |-
+        roi-top-offset=0
+        roi-bottom-offset=0
+        detected-min-w=0
+        detected-min-h=0
+        detected-max-w=0
+        detected-max-h=0        
+      streammux: |-
+        batched-push-timeout=90000
+      otherParams:
+        - tests: |-
+            file-loop=1
+   userinputs:
+      properties: |-
+        batch_size=${batch_size}
+        width=${width}
+        height=${height}
+        production=0
+        no_streams=${batch_size}
+
+
+#
+# Required PODs definition for App 
+#
+pods:
+- name: deepstream
+  replicas: 1
+  containers:
+  - name: deepstream
+    image: "nvcr.io/isv-nvidia-metropolis/industrial_app:latest"
+    command: ["/bin/bash", "-c"]
+    args: ["-c", "cd sources/apps/sample_apps/deepstream-segmentation-analytics; make; ./deepstream-segmentation-analytics -c /mnt/deepstream-segmentation-analytics/ds-configs/config.txt -i /mnt/deepstream-segmentation-analytics/user-configs/userInput.txt"]
+    volumeMounts:
+    - name: ds-config-volume-gpu-${gpu_index}
+      mountPath: /mnt/deepstream-segmentation-analytics/ds-configs/
+    - name: user-input-txt-volume-gpu-${gpu_index}
+      mountPath: /mnt/deepstream-segmentation-analytics/user-configs/
+    - name: source-streams-rootdir-${gpu_index}
+      mountPath: /mnt/deepstream-segmentation-analytics/source-streams-rootdir/
+    nvidia:
+      singleGpuPerContainer: yes
+      nvidiaDevicePlugin:
+        autoGpu: true
+
+  volumes:
+  - name: ds-config-volume-gpu-${gpu_index}
+    configMap:
+      name: dsconfig-gpu-${gpu_index}
+  - name: user-input-txt-volume-gpu-${gpu_index}
+    configMap:
+      name: userconfig-gpu-${gpu_index}
+  - name: source-streams-rootdir-${gpu_index}
+    hostPath:
+      path: ${localhostpath}
+
+
+#
+# ------ DEPLOYMENT SECTION ------------
+#
+
+# Below Values will be overriden by NVIDIA Metropolis Portal
+# The following is an example for 1 video stream
+# An operator will be asked to customize the hostnames, GPU IDs and streams information
+# GPU IDs are PCI BUS order
+
+nvidia:
+  version: 1
+  nodes:
+  - name: "customer1" # kubectl get nodes
+    localhostpath: <path to my streams source dir>
+    width: <width>
+    height: <height>
+    batch_size: <batch_size>
+    no_streams: <batch_size>
+    gpus:
+    - id: 0
+      streams:
+      - stream: <images1>
+      - stream: <images2>
+      - stream: <images1>
+global:
+  nvidia:
+    version: 1
+    docker:
+      imagePullSecret: imagepullsecret
+# For Non-EGX deployment only: Please set password to your NGC API KEY
+      registry: "nvcr.io"
+      username: "$oauthtoken"
+      password: ""
+

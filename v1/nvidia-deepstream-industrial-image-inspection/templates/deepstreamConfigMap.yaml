@@ -1,0 +1,90 @@
+{{- $chart := .Chart -}}
+{{- $values := .Values -}}
+{{- $batchsize := $values.deepstream.batchsize }}
+{{- $appConfig := $values.deepstream.configs }}
+{{- range $node := $values.nvidia.nodes }}
+   {{- range $index, $gpu := $node.gpus }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    app: {{ $chart.Name }}
+    app.version: {{ $chart.AppVersion }}
+  labels:
+    name: dsconfig-gpu-{{ $index }}
+  name: dsconfig-gpu-{{ $index }}
+  namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+data: 
+  config.txt: |-
+    {{- if hasKey $appConfig "application" }}
+    [application]
+{{$appConfig.application | indent 4 }}
+    {{- end}}
+
+      {{- if hasKey $appConfig "sinks" }}
+      {{- range $key, $sink := $appConfig.sinks }}
+    [sink{{$key | toString}}]
+{{$sink.sink | indent 4 | replace "${gpu_index}" ($index | toString) }}
+      {{- end}}
+      {{- end}}
+
+      {{- if hasKey $appConfig "property" }}
+    [property]
+{{$appConfig.property | indent 4}}
+      {{- end}}
+
+      {{- if hasKey $appConfig "tracker" }}
+    [tracker]
+{{$appConfig.tracker | indent 4 | replace "${gpu_index}" ($index | toString)  }}
+      {{- end}}
+
+      {{- if hasKey $appConfig "tiled-display" }}
+    [tiled-display]
+{{$appConfig.tiled_display | indent 4 | replace "${gpu_index}" ($index | toString)  }}
+      {{- end}}
+
+      {{- if hasKey $appConfig "osd" }}
+    [osd]
+{{$appConfig.osd | indent 4 | replace "${gpu_index}" ($index | toString)  }}
+      {{- end}}
+
+      {{- if hasKey $appConfig "streammux" }}
+    [streammux]
+{{$appConfig.streammux | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" ($batchsize | toString) }}
+      {{- end}}
+
+      {{- if hasKey $appConfig "primarygie" }}
+    [primary-gie]
+{{$appConfig.primarygie | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" ($batchsize | toString) }}
+      {{- end}}
+    
+      {{- if hasKey $appConfig "secondary_gies" }}
+      {{- range $key, $secondary_gies := $appConfig.secondary_gies }}
+    [secondary-gie{{ $key | toString}}]
+{{$secondary_gies.secondary_gie | indent 4 | replace "${gpu_index}" ($index | toString) | replace "${batch}" ($batchsize | toString)  }}
+      {{- end}}
+      {{- end}} 
+    
+      {{- if hasKey $appConfig "otherParams" }}
+      {{- range $key, $otherParams := $appConfig.otherParams }} 
+
+    [tests]
+{{$otherParams.tests | indent 4 }}
+      {{- end}}
+      {{- end}}
+
+      {{- if hasKey $appConfig "class_attrs_all" }}
+    [class-attrs-all]
+{{$appConfig.class_attrs_all | indent 4}}
+      {{- end}}
+
+      {{- if hasKey $appConfig "sourcesTemplate" }}
+      {{- range $ix, $s1 := $gpu.streams }}
+    [source{{$ix | toString}}]
+{{$appConfig.sourcesTemplate | indent 4 | replace "${gpu_index}" ($index | toString)| replace "${source_uri}" $s1.url }}
+      {{- end}}
+      {{- end}}
+---
+   {{- end}}
+
+{{- end }}

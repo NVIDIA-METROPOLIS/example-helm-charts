@@ -1,0 +1,30 @@
+{{- $chart := .Chart -}}
+{{- $values := .Values -}}
+{{- $userconfig := $values.deepstream.userinputs }}
+{{- range $node := $values.nvidia.nodes }}
+   {{- range $index, $gpu := $node.gpus }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    app: {{ $chart.Name }}
+    app.version: {{ $chart.AppVersion }}
+  labels:
+    name: userconfig-gpu-{{ $index }}
+  name: userconfig-gpu-{{ $index }}
+  namespace: {{ $chart.Name }}-{{ $node.name | replace "." "-" }}
+data: 
+  userInput.txt: |-
+    {{- if hasKey $userconfig "properties"}}
+    {{ $userconfig.properties | nindent 4 | replace "${width}" ($node.width | toString) | replace "${height}" ($node.height | toString) | replace "${batch_size}" ($node.batch_size | toString) }}
+    {{- end}}
+
+    {{- range $ix, $s1 := $gpu.streams }}
+    stream{{$ix | toString}}=/mnt/deepstream-segmentation-analytics/source-streams-rootdir/{{ $s1.stream }}
+    {{- end}}
+
+
+---
+   {{- end }}
+
+{{- end }}
